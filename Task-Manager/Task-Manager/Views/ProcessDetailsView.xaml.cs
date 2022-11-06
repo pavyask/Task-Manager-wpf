@@ -14,16 +14,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Task_Manager
+namespace Task_Manager.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for SelectedProcessDetails.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ProcessDetailsView : UserControl
     {
-        public MainWindow()
+        public ProcessDetailsView()
         {
             InitializeComponent();
+            cmbPriorities.ItemsSource = Enum.GetValues(typeof(ProcessPriorityClass));
+            cmbPriorities.SelectedIndex = 0;
         }
     }
 }

@@ -4,6 +4,25 @@
              xmlns:local="clr-namespace:Task_Manager"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style TargetType="Button">
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="Margin" Value="10 5 5 5"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="Margin" Value="10 5 5 5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="HeaderTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="Margin" Value="10 5 10 5"/>
+        </Style>
     </Application.Resources>
 </Application>
