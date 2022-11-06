@@ -4,11 +4,50 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Manager"
-        xmlns:views="clr-namespace:Task_Manager.Views"
         xmlns:viewModels="Task"
         mc:Ignorable="d"
         Title="Task Manager" Height="800" Width="1400">
     <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+
+        <Style x:Key="stopBtn" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRefreshing}" Value="False">
+                    <Setter Property="Background" Value="Red"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="refreshBtn" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRefreshing}" Value="True">
+                    <Setter Property="Background" Value="Green"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="threadTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Content="{Binding Id}" />
+                <Label Grid.Column="1" Content="{Binding PriorityLevel}" />
+                <Label Grid.Column="2" Content="{Binding BasePriority}" />
+                <Label Grid.Column="3" Content="{Binding CurrentPriority}" />
+                <Label Grid.Column="4" Content="{Binding StartTime}" />
+                <Label Grid.Column="5" Content="{Binding ThreadState}" />
+            </Grid>
+
+        </DataTemplate>
     </Window.Resources>
 
     <Grid x:Name="layoutGrid">
@@ -21,12 +60,115 @@
         <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0.5"/>
         <Border Grid.Column="2" BorderBrush="Black" BorderThickness="0.5"/>
         <GridSplitter Grid.Column="1" Width="3" Background="Gray"
-                  VerticalAlignment="Stretch" HorizontalAlignment="Center" />
+                  VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
 
 
 
-        <views:ProcessListView x:Name="processList" DataContext="{Binding ProcessListViewModel}" Grid.Column="0"/>
-        <views:ProcessDetailsView x:Name="processDetails" DataContext="{Binding ProcessDetailsViewModel}"  Grid.Column="2"/>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" BorderBrush="Black" BorderThickness="0.5"/>
+            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="0.5"/>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                <TextBlock Text="Process list" Style="{StaticResource HeaderTextBlockStyle}"/>
+                <Button x:Name="refreshBtn" Command="{Binding RefreshCommand}" Style="{StaticResource refreshBtn}">Refresh</Button>
+                <Button x:Name="stopRefreshBtn" Command="{Binding StopRefreshingCommand}"  Style="{StaticResource stopBtn}">Stop Refreshing</Button>
+            </StackPanel>
+
+            <DataGrid x:Name="dgProcess" SelectedItem="{Binding SelectedProcessListItemViewModel}" Grid.Row="1" Grid.Column="0" 
+                  ItemsSource="{Binding ProcessListItemViewModels}" AutoGenerateColumns="False"
+                  MinColumnWidth="150" FontSize="15" HorizontalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Process Name" Width="*" Binding="{Binding ProcessName}"/>
+                    <DataGridTextColumn Header="Process ID" Width="*" Binding="{Binding Id}"/>
+                    <DataGridTextColumn Header="RAM Usage [MB]" Width="*" Binding="{Binding WorkingSet64MB}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" BorderBrush="Black" BorderThickness="0.5"/>
+            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="0.5"/>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Text="Selected Process Details" Style="{StaticResource HeaderTextBlockStyle}" />
+                <Button x:Name="killProcessBtn" Command="{Binding KillCommand}">Kill</Button>
+                <Button x:Name="chngPriorityBtn" Command="{Binding ChangePriorityCommand}">Change Priority</Button>
+                <ComboBox Name="cmbPriorities" SelectedItem="{Binding SelectedPriorityClass}"/>
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Process Name:" />
+                <Label Grid.Row="0" Grid.Column="1" Content="{Binding ProcessName}" />
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Process Id:" />
+                <Label Grid.Row="1" Grid.Column="1" Content="{Binding Id}" />
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Process Session Id:" />
+                <Label Grid.Row="2" Grid.Column="1" Content="{Binding SessionId}" />
+
+                <Label Grid.Row="3" Grid.Column="0" Content="Process Base Priority:" />
+                <Label Grid.Row="3" Grid.Column="1" Content="{Binding BasePriority}" />
+
+                <Label Grid.Row="4" Grid.Column="0" Content="Process Priority Class:" />
+                <Label Grid.Row="4" Grid.Column="1" Content="{Binding ProcessPriorityClass}" />
+
+                <Label Grid.Row="5" Grid.Column="0" Content="Total Processor Time:" />
+                <Label Grid.Row="5" Grid.Column="1" Content="{Binding TotalProcessorTime}" />
+
+                <Label Grid.Row="6" Grid.Column="0" Content="Process RAM Usage [B]:" />
+                <Label Grid.Row="6" Grid.Column="1" Content="{Binding WorkingSet64}" />
+
+                <Label Grid.Row="7" Grid.Column="0" Content="Process Thread Count:" />
+                <Label Grid.Row="7" Grid.Column="1" Content="{Binding ThreadsCount}" />
+
+                <Label Grid.Row="8" Grid.ColumnSpan="2" Content="Threads:" />
+
+                <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Vertical">
+
+                    <ListView ItemsSource="{Binding Threads}" ItemTemplate="{StaticResource threadTemplate}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment"  Value="Stretch"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+
+                </StackPanel>
+
+            </Grid>
+        </Grid>
 
     </Grid>
 </Window>

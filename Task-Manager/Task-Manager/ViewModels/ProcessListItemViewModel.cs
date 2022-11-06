@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,17 +8,22 @@ using System.Threading.Tasks;
 
 namespace Task_Manager.ViewModels
 {
-    public class ProcessListItemViewModel : ViewModelBase
+    public partial class ProcessListItemViewModel : ObservableObject
     {
-        public Process Process { get; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(
+            nameof(ProcessName),
+            nameof(Id),
+            nameof(WorkingSet64MB))]
+        private Process _process;
 
-        public string ProcessName => Process.ProcessName;
-        public int Id => Process.Id;
-        public float WorkingSet64MB => (float)Process.WorkingSet64 / (1024 ^ 2);
+        public string ProcessName => _process.ProcessName;
+        public int Id => _process.Id;
+        public float WorkingSet64MB => (float)_process.WorkingSet64 / (1024 ^ 2);
 
         public ProcessListItemViewModel(Process process)
         {
-            Process = process;
+            _process = process;
         }
     }
 }
