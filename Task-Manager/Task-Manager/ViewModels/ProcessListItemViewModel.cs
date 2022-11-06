@@ -14,12 +14,28 @@ namespace Task_Manager.ViewModels
         [NotifyPropertyChangedFor(
             nameof(ProcessName),
             nameof(Id),
-            nameof(WorkingSet64MB))]
+            nameof(WorkingSet64MB),
+            nameof(TotalProcessorTime))]
+        
         private Process _process;
 
-        public string ProcessName => _process.ProcessName;
-        public int Id => _process.Id;
-        public float WorkingSet64MB => (float)_process.WorkingSet64 / (1024 ^ 2);
+        public string? ProcessName
+        {
+            get { try { return _process.ProcessName; } catch (Exception) { return ""; } }
+        }
+        public int? Id
+        {
+            get { try { return _process.Id; } catch (Exception) { return null; } }
+        }
+        public string? WorkingSet64MB
+        {
+            get { try { return ((float)_process.WorkingSet64 / (1024 ^ 2)).ToString(); } catch (Exception) { return ""; } }
+        }
+
+        public string? TotalProcessorTime
+        {
+            get { try { return _process?.TotalProcessorTime.ToString(); } catch (Exception) { return ""; } }
+        }
 
         public ProcessListItemViewModel(Process process)
         {

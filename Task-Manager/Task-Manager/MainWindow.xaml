@@ -6,10 +6,17 @@
         xmlns:local="clr-namespace:Task_Manager"
         xmlns:viewModels="Task"
         mc:Ignorable="d"
-        Title="Task Manager" Height="800" Width="1400">
+        Title="Task Manager" Height="800" Width="1600">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="FontSize" Value="15"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="MaxHeight" Value="35"/>
         </Style>
 
         <Style x:Key="stopBtn" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -40,21 +47,21 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Column="0" Content="{Binding Id}" />
-                <Label Grid.Column="1" Content="{Binding PriorityLevel}" />
+                <!--<Label Grid.Column="1" Content="{Binding PriorityLevel}" />-->
                 <Label Grid.Column="2" Content="{Binding BasePriority}" />
                 <Label Grid.Column="3" Content="{Binding CurrentPriority}" />
                 <Label Grid.Column="4" Content="{Binding StartTime}" />
                 <Label Grid.Column="5" Content="{Binding ThreadState}" />
             </Grid>
-
         </DataTemplate>
+
     </Window.Resources>
 
     <Grid x:Name="layoutGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0.5"/>
@@ -76,16 +83,22 @@
             <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
                 <TextBlock Text="Process list" Style="{StaticResource HeaderTextBlockStyle}"/>
                 <Button x:Name="refreshBtn" Command="{Binding RefreshCommand}" Style="{StaticResource refreshBtn}">Refresh</Button>
+                <Label Content="Refresh rate [s]:" />
+                <TextBox Text="{Binding RefreshRate}" />
                 <Button x:Name="stopRefreshBtn" Command="{Binding StopRefreshingCommand}"  Style="{StaticResource stopBtn}">Stop Refreshing</Button>
+                <Label Content="Name Filter:" />
+                <TextBox Text="{Binding NameFilter}" />
             </StackPanel>
 
-            <DataGrid x:Name="dgProcess" SelectedItem="{Binding SelectedProcessListItemViewModel}" Grid.Row="1" Grid.Column="0" 
+            <DataGrid SelectedItem="{Binding SelectedProcessListItemViewModel}" Grid.Row="1" Grid.Column="0" 
                   ItemsSource="{Binding ProcessListItemViewModels}" AutoGenerateColumns="False"
-                  MinColumnWidth="150" FontSize="15" HorizontalScrollBarVisibility="Auto">
+                  MinColumnWidth="150" FontSize="15" HorizontalScrollBarVisibility="Auto"
+                      IsReadOnly="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Process Name" Width="*" Binding="{Binding ProcessName}"/>
                     <DataGridTextColumn Header="Process ID" Width="*" Binding="{Binding Id}"/>
-                    <DataGridTextColumn Header="RAM Usage [MB]" Width="*" Binding="{Binding WorkingSet64MB}"/>
+                    <DataGridTextColumn Header="Physical memory usage" Width="*" Binding="{Binding WorkingSet64MB}"/>
+                    <DataGridTextColumn Header="Total Processor Time" Width="*" Binding="{Binding TotalProcessorTime}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
@@ -135,38 +148,37 @@
                 <Label Grid.Row="1" Grid.Column="0" Content="Process Id:" />
                 <Label Grid.Row="1" Grid.Column="1" Content="{Binding Id}" />
 
-                <Label Grid.Row="2" Grid.Column="0" Content="Process Session Id:" />
+                <Label Grid.Row="2" Grid.Column="0" Content="Session Id:" />
                 <Label Grid.Row="2" Grid.Column="1" Content="{Binding SessionId}" />
 
-                <Label Grid.Row="3" Grid.Column="0" Content="Process Base Priority:" />
+                <Label Grid.Row="3" Grid.Column="0" Content="Base Priority:" />
                 <Label Grid.Row="3" Grid.Column="1" Content="{Binding BasePriority}" />
 
-                <Label Grid.Row="4" Grid.Column="0" Content="Process Priority Class:" />
+                <Label Grid.Row="4" Grid.Column="0" Content="Priority Class:" />
                 <Label Grid.Row="4" Grid.Column="1" Content="{Binding ProcessPriorityClass}" />
 
                 <Label Grid.Row="5" Grid.Column="0" Content="Total Processor Time:" />
                 <Label Grid.Row="5" Grid.Column="1" Content="{Binding TotalProcessorTime}" />
 
-                <Label Grid.Row="6" Grid.Column="0" Content="Process RAM Usage [B]:" />
+                <Label Grid.Row="6" Grid.Column="0" Content="Physical memory usage [B]:" />
                 <Label Grid.Row="6" Grid.Column="1" Content="{Binding WorkingSet64}" />
 
-                <Label Grid.Row="7" Grid.Column="0" Content="Process Thread Count:" />
+                <Label Grid.Row="7" Grid.Column="0" Content="Thread Count:" />
                 <Label Grid.Row="7" Grid.Column="1" Content="{Binding ThreadsCount}" />
 
                 <Label Grid.Row="8" Grid.ColumnSpan="2" Content="Threads:" />
 
-                <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Vertical">
-
-                    <ListView ItemsSource="{Binding Threads}" ItemTemplate="{StaticResource threadTemplate}">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment"  Value="Stretch"/>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                    </ListView>
-
-                </StackPanel>
-
+                <ScrollViewer Grid.Row="9" Grid.ColumnSpan="2">
+                    <StackPanel Orientation="Vertical">
+                        <ListView ItemsSource="{Binding Threads}" ItemTemplate="{StaticResource threadTemplate}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment"  Value="Stretch"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
         </Grid>
 
