@@ -183,11 +183,19 @@ namespace Task_Manager.ViewModels
         [RelayCommand]
         private void Kill()
         {
-            if (SelectedProcess != null && _selectedProcessListItemViewModel != null)
+            try
             {
-                SelectedProcess.Kill();
-                ProcessListItemViewModels.Remove(_selectedProcessListItemViewModel);
+                if (SelectedProcess != null && _selectedProcessListItemViewModel != null)
+                {
+                    SelectedProcess.Kill();
+                    ProcessListItemViewModels.Remove(_selectedProcessListItemViewModel);
+                }
             }
+            catch (Exception)
+            {
+                return;
+            }
+           
         }
 
         [RelayCommand]

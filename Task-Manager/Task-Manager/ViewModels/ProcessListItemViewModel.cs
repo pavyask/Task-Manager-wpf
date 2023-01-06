@@ -16,7 +16,6 @@ namespace Task_Manager.ViewModels
             nameof(Id),
             nameof(WorkingSet64MB),
             nameof(TotalProcessorTime))]
-        
         private Process _process;
 
         public string? ProcessName
